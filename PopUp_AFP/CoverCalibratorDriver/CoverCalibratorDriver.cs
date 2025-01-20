@@ -35,7 +35,7 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
     [ComVisible(true)]
     [Guid("199fcd39-82ef-4d6a-a532-3c2b777b714f")]
     [ProgId("ASCOM.PopUpAutoFlatPanel.CoverCalibrator")]
-    [ServedClassName("ASCOM CoverCalibrator Driver for PopUpAutoFlatPanel")] // Driver description that appears in the Chooser, customise as required
+    [ServedClassName("Pop Up AFP")] // Driver description that appears in the Chooser, customise as required
     [ClassInterface(ClassInterfaceType.None)]
     public class CoverCalibrator : ReferenceCountedObjectBase, ICoverCalibratorV1, IDisposable
     {
