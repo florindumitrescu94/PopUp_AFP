@@ -10,13 +10,13 @@
 #define SOCOMMAND           '>'           // defines the start character of a command
 
 
-int array_sum = 0;
+int sample_sum = 0;
 int panel_position=0; // Current panel position as read by potentiometer
 int target_panel_pos = 0;
 int panel_light=0; // State for panel light
 int panel_brightness=0; // Value for panel light 0-255
 int panel_dir=0; // 0 = Closing. 1 = Opening TO BE DETERMINED
-int panel_state=0; //0 = Closed. 1 = Open 2 = Neither
+int panel_state=0; //0 = Closed. 1 = Open 2 = Unknown 3 = Error 4 = Moving
 int panel_closed_pos=0; // define close position
 int panel_open_pos=930; // define open position
 int target_state = 3; // used to hold target state (close = 0 , open = 1, done = 3, halt  = 4). Initialize with 3
@@ -30,7 +30,10 @@ char* queue[QUEUELENGTH];
 int queueHead = -1;
 int queueCount = 0;
 int idx = 0;                              // index into the command string
-String line;                
+String line;       
+int watchdog_time_span = 0;
+int watchdog_pos_0 = 0;
+int watchdog_pos_1 = 0;
 
 char* pop() {
   --queueCount;
@@ -45,7 +48,7 @@ void push(char command[MAXCOMMAND]) {
 }
 
 void setup() {
-  TCCR2B = TCCR2B & B11111000 | B00000001;
+  TCCR2B = TCCR2B & B11111000 | B00000001; // set pin 3 pwm frequency to 31khz
   pinMode(POSITION,INPUT);
   pinMode(OPEN,OUTPUT);
   pinMode(CLOSE,OUTPUT);
@@ -148,17 +151,17 @@ void processSerialCommand(){
   else if (cmd == "GETLIGHTSTATE")
   {
     Serial.print(panel_light);
-    Serial.println("#");
+    Serial.print("#");
   }
   else if (cmd == "GETSTATE")
   {
     Serial.print(panel_state);
-    Serial.println("#");
+    Serial.print("#");
   }
   else if (cmd == "GETLIGHT")
   {
     Serial.print(panel_brightness);
-    Serial.println("#");
+    Serial.print("#");
   }
   else if (cmd == "GETPOSITION")
   {
@@ -176,17 +179,18 @@ void processSerialCommand(){
 }
 
 void loop() {
+  watchDog ();
 
   if ( queueCount >= 1 ) {               // check for serial command
     processSerialCommand();
   }
-  array_sum = 0;
+  sample_sum = 0;
   for (int i = 0; i < 32; i++)
   {
-    array_sum = array_sum + analogRead(POSITION);
+    sample_sum = sample_sum + analogRead(POSITION);
   }
-  int avg = array_sum/32;
-  panel_position = round(array_sum/32);
+  int avg = sample_sum/32;
+  panel_position = round(sample_sum/32);
 
   
   if (target_state == 4) // HALT command. stops all movement and sets variables
@@ -196,7 +200,7 @@ void loop() {
     panel_state = 2;
     target_state = 3;
     Serial.print(panel_state);
-    Serial.println("#");
+    Serial.print("#");
   }
 
 
@@ -205,6 +209,7 @@ void loop() {
   
   if (target_state == 0) // if target action is to close the panel
   {
+    panel_state = 4 ;
     analogWrite(OPEN,0); 
     if (accel_spd <= panel_fast)
     {
@@ -234,7 +239,7 @@ void loop() {
       target_state = 3; // target_state = 3 -> panel has reached desired position, skip the IFs
       analogWrite(CLOSE,0);
       Serial.print(panel_state);
-      Serial.println("#");
+      Serial.print("#");
     }
   }
 
@@ -242,6 +247,7 @@ void loop() {
   
   if (target_state == 1) // if target action is to open the panel
   {
+    panel_state = 4;
     analogWrite(CLOSE,0);
     if (accel_spd <= panel_fast)
     {
@@ -263,7 +269,36 @@ void loop() {
       analogWrite(OPEN,0);
       accel_spd = 30;
       Serial.print(panel_state);
-      Serial.println("#");
+      Serial.print("#");
     }
+  }
+}
+void watchDog () // checks to see if the motor is stalled every 250 "ticks"
+{
+  if (target_state == 0 || target_state == 1)
+  { 
+    if (watchdog_time_span == 0) 
+    {
+      watchdog_pos_0 = panel_position; // at the start of the 150 ticks, assigns position 0 as current panel position
+    }
+    watchdog_time_span += 1; // increase by 1
+    if (watchdog_time_span == 250) // at tick 250 do
+      { 
+        watchdog_pos_1 = panel_position; //assign position 1 as current panel position 
+        if (abs(watchdog_pos_1 - watchdog_pos_0) < 5) // if the absolute difference between the two positions is less than 10 do
+        {
+          analogWrite(OPEN,0); // cancels all movement
+          analogWrite(CLOSE,0); //cancels all movement
+          target_state = 3; // sets target state to 3
+          panel_state = 3; // sets sets panel state to 3 (error in Driver)
+        }
+        watchdog_time_span = 0; // reset counter
+      }
+  }
+  if (target_state == 3 || target_state == 4)
+  {
+    watchdog_time_span = 0; // reset counter to 0 if state 3 or 4 are reached
+    watchdog_pos_0 = 0;
+    watchdog_pos_1 = 0;
   }
 }
