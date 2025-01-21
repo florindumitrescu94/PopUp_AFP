@@ -106,6 +106,9 @@ The ASCOM setup window has three properties:
   - Open Position - Where should the panel stop when opening
 The open and close values are between 0 and 1023, however, I would suggest only using between 0 and 950 due to inacuracies in the potentiometers.
 
+![image](https://github.com/user-attachments/assets/c4e7d72b-7d30-4cd0-ace7-a0611c7df51f)
+
+
 To find out the right values, you can use the Serial Monitor inside the Arduino IDE.
 Send >OPEN# to open the panel and >CLOSE# to close it. Send >HALT# to stop the motion where you want it to stop, then send >GETPOSITION# to get the current position. Use that position in either of the two properties to set the panel's limits. 
 
@@ -116,6 +119,9 @@ This is how the screen will look in NINA (I am giving this an an example, since 
 Toggle will turn the panel on or off. If there has been no value set to the intensity before, the panel will light up at max brightness (255).
 Open and CLose buttons do what they say: they open and close the cover. 
 Since it is ASCOM connected, the panel can be included in the sequencer to automate flat taking.
+
+Also, I've added a watchdog to check for panel stalling. If the panel is set to open or close and the position does not change by at least 10 in about 2 seconds, the power to the motor will be cut off and "Error" state will be sent to driver.
+This is in place to avoid damage to the device.
 
 
 

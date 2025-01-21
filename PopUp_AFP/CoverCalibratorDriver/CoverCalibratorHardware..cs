@@ -404,11 +404,15 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
         {
             get
             {
+                objSerial.Transmit(">GETSTATE#");
+                panelState = objSerial.ReceiveTerminated("#").Replace("#", "");
                 switch (panelState)
                 {
                     case "0": return CoverStatus.Closed;
                     case "1": return CoverStatus.Open;
                     case "2": return CoverStatus.Unknown;
+                    case "3": return CoverStatus.Error;
+                    case "4": return CoverStatus.Moving;
                     default: return CoverStatus.Unknown;
                 }
             }
@@ -420,14 +424,7 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
         internal static void OpenCover()
         {
             panelState = "2";
-            using (var driverProfile = new Profile())
-            {
-                driverProfile.DeviceType = "CoverCalibrator";
-                string message = ">OPEN#";
-                objSerial.Transmit(">OPEN#");
-                panelState = "1";
-                LogMessage("Sent open cover", message);
-            }
+            objSerial.Transmit(">OPEN#");
         }
 
         /// <summary>
@@ -436,13 +433,7 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
         internal static void CloseCover()
         {
             panelState= "2";
-            using (var driverProfile = new Profile())
-            {
-                driverProfile.DeviceType = "CoverCalibrator";
                 objSerial.Transmit(">CLOSE#");
-                panelState = "0";
-
-            }
         }
 
         /// <summary>
@@ -450,12 +441,7 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
         /// </summary>
         internal static void HaltCover()
         {
-            using (var driverProfile = new Profile())
-            {
-                driverProfile.DeviceType = "CoverCalibrator";
                 objSerial.Transmit(">HALT#");
-                isMoving = "0";
-            }
         }
 
         /// <summary>
@@ -465,7 +451,6 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
         {
             get
             {
-
                 if (lightState == "1")
                 {
                     return CalibratorStatus.Ready;
@@ -506,14 +491,9 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
         /// <param name="Brightness"></param>
         internal static void CalibratorOn(int Brightness)
         {
-            using (var driverProfile = new Profile())
-            {
                 lightLevel = Brightness.ToString();
-                driverProfile.DeviceType = "CoverCalibrator";
                 String SerialMessage = ">LIGHTON_" + lightLevel + "#";
                 objSerial.Transmit(SerialMessage);
-                lightState = "1";
-            }
         }
 
         /// <summary>
@@ -525,7 +505,6 @@ namespace ASCOM.PopUpAutoFlatPanel.CoverCalibrator
             {
                 driverProfile.DeviceType = "CoverCalibrator";
                 objSerial.Transmit(">LIGHTOFF#");
-                lightState = "0";
                 lightLevel = "0";
             }
         }
