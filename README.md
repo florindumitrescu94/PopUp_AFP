@@ -36,6 +36,11 @@ I've tested the panel and the Serial functionality is not affected by this frequ
 On top of the red plastic,I've also added a piece of 2mm plexiglass for rigidity and a matte white translucid binder cover.
 Make sure to black out the edges of the plexiglass to avoid internal reflection and light bleeds from the outside. I've also taped the whole outside edge with a black textile tape.
 
+After adding the red and white binder cover, the histogram looks like this, which is good enough.
+
+![image](https://github.com/user-attachments/assets/7bedba7d-d8d7-404f-bc6c-3f016e0d6335)
+
+
 The panel is held together with 6 screws and another 4 that hold it to the arms. 
 
 The arms are specifically designed to go on the 3mm and 6mm shafts of the motor and potentiometer respectively. They also have a locking screw. When mounting the motor, it's a good practice to try and get the shafts' flat portion to line up with the locking screw.
