@@ -45,6 +45,7 @@ void push(char command[MAXCOMMAND]) {
 }
 
 void setup() {
+  TCCR2B = TCCR2B & B11111000 | B00000001;
   pinMode(POSITION,INPUT);
   pinMode(OPEN,OUTPUT);
   pinMode(CLOSE,OUTPUT);
