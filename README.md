@@ -120,7 +120,7 @@ Since it is ASCOM connected, the panel can be included in the sequencer to autom
 
 
 
-
+You can find the PCB copper file, EasyEDA project and the Fusion 360 project inside the "Construction" folder
 
 
 
