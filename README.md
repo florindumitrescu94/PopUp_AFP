@@ -42,9 +42,14 @@ The arms are specifically designed to go on the 3mm and 6mm shafts of the motor 
 For the potentiometer, it matters less, since the screw might end up holding on the solid part of the shaft. If you can find a potentiometer that has a solid shaft, instead of a D shaft, it would be even better. The potentiometer also acts as a hinge for the panel, so it must be securely mounted in place on the endcap.
 For this, we use, once again, epoxy. Stick the shaft through the hole in the endcap, push the potentiometer all the way inside the walls inside, then add epoxy around it. Make sure that 1: You are not gluing the shaft to the body and 2: that the shaft is not leaning in any direction. 
 Once this cures, it will be a solid hinge point for the panel.
-The pottentiometer is this kind: 
+The pottentiometer I've used is this kind (what I had available at the time. I might change it in the future).
 
 ![image](https://github.com/user-attachments/assets/4de30ccc-df25-472a-b501-4cfc316ada51)
+
+A better model would be a mini potentiometer that can be fixed using a nut to the end cap, like this one:
+
+![image](https://github.com/user-attachments/assets/72f5f74d-272d-4478-8b77-2e5b590ae62b)
+
 
 
 The motor I've used is a GA12 N20 15rpm geared micromotor (https://shorturl.at/ir1aB) 
@@ -66,6 +71,9 @@ The case is made out of three parts:
   - The base that will mount on the telescope.
 I did not print the base as part of the main body to avoid large support material usage. The body was designed to hold the PCB in place. The PCB will fit inside the channels and will go in as far as the end cap allows.
 Basically, if you respect the dimensions, the PCB should go in all the way and be flush with the open end. If it's too sunken in, just add some bits of plastic to the end cap. If it's peaking out, remove some PCB.
+
+![image](https://github.com/user-attachments/assets/b7680632-d96a-433d-b673-de995c7ce923)
+
 
 I've glued the base to the body using some epoxy glue. Make sure to rough up the surfaces with a 40 grit sandpaper, so that the epoxy can adhere better. I've also added two pieces of tape to better hold the base to the body. 
 Remember: all the force that will be exerted to the device will be conentrated here. If this joint is weak, it will break and fall off the telescope (not fun). 
@@ -90,6 +98,24 @@ Make sure to wire the motor wires correctly so that it spins in the right direct
 
 ![image](https://github.com/user-attachments/assets/3a62564d-5ec1-468b-8ab2-19a06a03e4de)
 
+
+
+The ASCOM setup window has three properties:
+  - COM port. Select the right port for this device. 
+  - Closed Position - Where should the panel stop when closing
+  - Open Position - Where should the panel stop when opening
+The open and close values are between 0 and 1023, however, I would suggest only using between 0 and 950 due to inacuracies in the potentiometers.
+
+To find out the right values, you can use the Serial Monitor inside the Arduino IDE.
+Send >OPEN# to open the panel and >CLOSE# to close it. Send >HALT# to stop the motion where you want it to stop, then send >GETPOSITION# to get the current position. Use that position in either of the two properties to set the panel's limits. 
+
+![image](https://github.com/user-attachments/assets/11eaeb8e-90e3-411f-a937-706cd0912002)
+
+This is how the screen will look in NINA (I am giving this an an example, since I am only using NINA)
+
+Toggle will turn the panel on or off. If there has been no value set to the intensity before, the panel will light up at max brightness (255).
+Open and CLose buttons do what they say: they open and close the cover. 
+Since it is ASCOM connected, the panel can be included in the sequencer to automate flat taking.
 
 
 
