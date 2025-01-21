@@ -106,6 +106,9 @@ The ASCOM setup window has three properties:
   - Open Position - Where should the panel stop when opening
 The open and close values are between 0 and 1023, however, I would suggest only using between 0 and 950 due to inacuracies in the potentiometers.
 
+![image](https://github.com/user-attachments/assets/c4e7d72b-7d30-4cd0-ace7-a0611c7df51f)
+
+
 To find out the right values, you can use the Serial Monitor inside the Arduino IDE.
 Send >OPEN# to open the panel and >CLOSE# to close it. Send >HALT# to stop the motion where you want it to stop, then send >GETPOSITION# to get the current position. Use that position in either of the two properties to set the panel's limits. 
 
