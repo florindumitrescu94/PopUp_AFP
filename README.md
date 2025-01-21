@@ -120,6 +120,9 @@ Toggle will turn the panel on or off. If there has been no value set to the inte
 Open and CLose buttons do what they say: they open and close the cover. 
 Since it is ASCOM connected, the panel can be included in the sequencer to automate flat taking.
 
+Also, I've added a watchdog to check for panel stalling. If the panel is set to open or close and the position does not change by at least 10 in about 2 seconds, the power to the motor will be cut off and "Error" state will be sent to driver.
+This is in place to avoid damage to the device.
+
 
 
 
