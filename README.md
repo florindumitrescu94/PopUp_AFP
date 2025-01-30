@@ -43,10 +43,19 @@ After adding the red and white binder cover, the histogram looks like this, whic
 
 The panel is held together with 6 screws and another 4 that hold it to the arms. 
 
-The arms are specifically designed to go on the 3mm and 6mm shafts of the motor and potentiometer respectively. They also have a locking screw. When mounting the motor, it's a good practice to try and get the shafts' flat portion to line up with the locking screw.
+The arms are specifically designed to go on the 3mm and 6mm shafts of the motor and potentiometer respectively. They also have a slot for installing a nut and a hole for a locking screw (M3 nut and screw, 14mm length). When mounting the motor, it's a good practice to try and get the shafts' flat portion to line up with the locking screw.
 For the potentiometer, it matters less, since the screw might end up holding on the solid part of the shaft. If you can find a potentiometer that has a solid shaft, instead of a D shaft, it would be even better. The potentiometer also acts as a hinge for the panel, so it must be securely mounted in place on the endcap.
 For this, we use, once again, epoxy. Stick the shaft through the hole in the endcap, push the potentiometer all the way inside the walls inside, then add epoxy around it. Make sure that 1: You are not gluing the shaft to the body and 2: that the shaft is not leaning in any direction. 
 Once this cures, it will be a solid hinge point for the panel.
+
+
+To fine tune the 0 position, using the Arduino IDE:
+  - With no arms attached send the close command and manually turn the potentiometer by hand to the 0 position, until the motor stops spinning.
+  - Put the arms on the motor and potentiometer, then mount the panel
+  - Send >CLOSE# again and see where they stop.
+  - If they stop before the desired position, undo the potentiometer locking screw and turn it 1 or 2 degrees clockwise.
+  - Send >OPEN# and then >CLOSE# again. Repeat this until you get the desired 0 position. Make sure to tighten the locking screws well enough so that they won't slip on the shafts.
+
 The pottentiometer I've used is this kind (what I had available at the time. I might change it in the future).
 
 ![image](https://github.com/user-attachments/assets/4de30ccc-df25-472a-b501-4cfc316ada51)
