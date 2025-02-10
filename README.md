@@ -11,7 +11,7 @@ The BOM is very short:
   - An Arduino Nano
   - MX1508 chip
   - GA12 N20 15rpm geared micromotor
-  - a PCB mounted potentiometer anywhere between 1k and 20k (I've used a 20k one, but anything in this range is a drop-in replacement)
+  - a 16mm diameter potentiometer anywhere between 1k and 20k (I've used a 10k one, but anything in this range is a drop-in replacement)
   - LR2905 N-MOSFET (SMD mounted)
   - two 100uF (min 10V) SMD mounted caps (6.3mm)
   - two 220uF (min 10V) TH mounted caps (6.3mm)
@@ -44,9 +44,7 @@ After adding the red and white binder cover, the histogram looks like this, whic
 The panel is held together with 6 screws and another 4 that hold it to the arms. 
 
 The arms are specifically designed to go on the 3mm and 6mm shafts of the motor and potentiometer respectively. They also have a slot for installing a nut and a hole for a locking screw (M3 nut and screw, 14mm length). When mounting the motor, it's a good practice to try and get the shafts' flat portion to line up with the locking screw.
-For the potentiometer, it matters less, since the screw might end up holding on the solid part of the shaft. If you can find a potentiometer that has a solid shaft, instead of a D shaft, it would be even better. The potentiometer also acts as a hinge for the panel, so it must be securely mounted in place on the endcap.
-For this, we use, once again, epoxy. Stick the shaft through the hole in the endcap, push the potentiometer all the way inside the walls inside, then add epoxy around it. Make sure that 1: You are not gluing the shaft to the body and 2: that the shaft is not leaning in any direction. 
-Once this cures, it will be a solid hinge point for the panel.
+Use a 10k-20k 16mm diameter, 6mm shaft potentiometer and fix it to the endcap using the included nut.
 
 
 To fine tune the 0 position, using the Arduino IDE:
@@ -55,15 +53,6 @@ To fine tune the 0 position, using the Arduino IDE:
   - Send >CLOSE# again and see where they stop.
   - If they stop before the desired position, undo the potentiometer locking screw and turn it 1 or 2 degrees clockwise.
   - Send >OPEN# and then >CLOSE# again. Repeat this until you get the desired 0 position. Make sure to tighten the locking screws well enough so that they won't slip on the shafts.
-
-The pottentiometer I've used is this kind (what I had available at the time. I might change it in the future).
-
-![image](https://github.com/user-attachments/assets/4de30ccc-df25-472a-b501-4cfc316ada51)
-
-A better model would be a mini potentiometer that can be fixed using a nut to the end cap, like this one:
-
-![image](https://github.com/user-attachments/assets/72f5f74d-272d-4478-8b77-2e5b590ae62b)
-
 
 
 The motor I've used is a GA12 N20 15rpm geared micromotor (https://shorturl.at/ir1aB) 
