@@ -228,7 +228,7 @@ void loop() {
     {
       if (panel_closed_pos == 0)
       {
-        for (int i=0;i<320;i++)
+        for (int i=0;i<420;i++)
         {
           analogWrite(CLOSE,panel_slow);
         }
