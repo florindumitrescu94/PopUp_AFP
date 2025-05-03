@@ -20,7 +20,7 @@ The BOM is fairly short:
   - 10k and 100 ohms SMD 0805 resistors
   - 1 SS545L SMD diode 
   - 1 through hole current limiting resistor for the LED strip (I went with 330 ohms, pick your own value based on your needs.
-  - a length of 8mm wide warm/natural white COB led strip (links below)
+  - a length of 8mm wide natural white COB led strip (any 12V COB LED Strip will work. I sourced mine locally from a store, you could order one from AliExpress and you'd probably get the same thing).
   - a 12W round LED light fixture (links below). We will use this for the internal diffuser: https://vi.aliexpress.com/item/33054747819.html?spm=a2g0o.productlist.main.25.2e8e2a0ccoLWNZ&algo_pvid=72f3e5f8-c4d3-4181-bed1-150988b04c45&algo_exp_id=72f3e5f8-c4d3-4181-bed1-150988b04c45-12&pdp_ext_f=%7B%22order%22%3A%224%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21RON%2133.76%2127.02%21%21%216.96%215.57%21%40211b813f17411153875014758e86c5%2167512424867%21sea%21RO%211948324624%21X&curPageLogUid=cfqfcEqeoubA&utparam-url=scene%3Asearch%7Cquery_from%3A
 
   To avoid flickering, the frequency of pin 3 has been increased to 31kHz and a ferite bead has been introduced in the circuit between the switching MOSFET and the LED strip. A flyback diode has been added to avoid any spikes created by the ferrite bead.
