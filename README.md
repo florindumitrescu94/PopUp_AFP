@@ -1,135 +1,115 @@
-![image](https://github.com/user-attachments/assets/537c78b6-64ce-4eb9-b8a7-01ba5e4c9b47)
+![front](https://github.com/user-attachments/assets/61d67608-b8cb-4ab6-ad03-d83aa7dcdf60)
 
 
-ASCOM connected DIY Automatic Flat Panel with Arduino and Electroluminescent panel 
 
-This flat panel project was built following existing designs. Its' purpose is not to reinvent the device, but to bring a DIY solution for a flat panel.
-I am aware, as you probably are, that there are multiple other DIY panels online, but I wanted to build a variant that does not use a servo motor. 
+ASCOM connected DIY Automatic Flat Panel with Arduino and LED Strip.
 
-This functions (and even looks) like any other flat panels available (sans the dew heater available on some) and can be used in any imaging software that has ASCOM capabilities.
-The BOM is very short: 
+While a number of DIY flat panel projects exist online already, I wanted to make my own.
+This is a flat panel with a spin: The motor and circuit board are on the panel itself, not on the telescope mounted base.
+This allows the whole thing to be more low profile than existing designs. One advantage is the fact that no fragile wires will flex during operation. While there still are some wires present (the USB and Power cables), these wires can be swapped out at any time easily and without the need to open up the device.
+
+This functions like any other flat panel (sans the dew heater available on some) and can be used in any imaging software that has ASCOM capabilities.
+
+
+The BOM is fairly short: 
   - An Arduino Nano
-  - MX1508 chip
-  - GA12 N20 15rpm geared micromotor
-  - a 16mm diameter potentiometer anywhere between 1k and 20k (I've used a 10k one, but anything in this range is a drop-in replacement)
+  - a small buck converter to get 5V from 12V https://vi.aliexpress.com/item/1005007092498838.html?spm=a2g0o.productlist.main.5.588f6bd5KwwhlR&algo_pvid=3e0ed6be-7084-4139-8f32-94e96cfbea35&algo_exp_id=3e0ed6be-7084-4139-8f32-94e96cfbea35-2&pdp_ext_f=%7B%22order%22%3A%22767%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21RON%216.09%216.09%21%21%219.15%219.15%21%40210384b917411158943222182e5c98%2112000039378058524%21sea%21RO%211948324624%21X&curPageLogUid=93Xb3F4eaNjm&utparam-url=scene%3Asearch%7Cquery_from%3A
+  - TD-7120MG 270 degrees stepper motor https://vi.aliexpress.com/item/1005007475952814.html?spm=a2g0o.productlist.main.1.19c660c7mPopOI&algo_pvid=f957a072-991a-4a65-8213-ea865c47b00c&algo_exp_id=f957a072-991a-4a65-8213-ea865c47b00c-1&pdp_ext_f=%7B%22order%22%3A%221%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21RON%2154.48%2143.56%21%21%2111.23%218.98%21%402103956a17411159195922612e85f0%2112000040906975075%21sea%21RO%211948324624%21X&curPageLogUid=SEp3C8e8rwn3&utparam-url=scene%3Asearch%7Cquery_from%3A
   - LR2905 N-MOSFET (SMD mounted)
-  - two 100uF (min 10V) SMD mounted caps (6.3mm)
-  - two 220uF (min 10V) TH mounted caps (6.3mm)
-  - 10k , 100 and 220 ohms SMD 0805 resistors
-  - Two SMD 0805 100nF caps
-  - 1 SS545L SMD diode  
-  - 1 BZV55 SMD diode
-  - 1 470uH inductor.
+  - a through-hole ferrite bead
+  - 10k and 100 ohms SMD 0805 resistors
+  - 1 SS545L SMD diode 
+  - 1 through hole current limiting resistor for the LED strip (I went with 330 ohms, pick your own value based on your needs.
+  - a length of 8mm wide warm/natural white COB led strip (links below)
+  - a 12W round LED light fixture (links below). We will use this for the internal diffuser: https://vi.aliexpress.com/item/33054747819.html?spm=a2g0o.productlist.main.25.2e8e2a0ccoLWNZ&algo_pvid=72f3e5f8-c4d3-4181-bed1-150988b04c45&algo_exp_id=72f3e5f8-c4d3-4181-bed1-150988b04c45-12&pdp_ext_f=%7B%22order%22%3A%224%22%2C%22eval%22%3A%221%22%7D&pdp_npi=4%40dis%21RON%2133.76%2127.02%21%21%216.96%215.57%21%40211b813f17411153875014758e86c5%2167512424867%21sea%21RO%211948324624%21X&curPageLogUid=cfqfcEqeoubA&utparam-url=scene%3Asearch%7Cquery_from%3A
 
-Most of these components can be sourced from the modules here https://shorturl.at/lNhVN (inductor and SS45L diode) and here: https://shorturl.at/gths6 (MX1508 chip, 2 100uF SMD caps, BZV55 diode and 220 ohm resistor).
+  To avoid flickering, the frequency of pin 3 has been increased to 31kHz and a ferite bead has been introduced in the circuit between the switching MOSFET and the LED strip. A flyback diode has been added to avoid any spikes created by the ferrite bead.
 
 
-  The EL panel can be bought from AliExpress here: https://shorturl.at/BpqwX. Make sure to select the 5V variant, as it will draw power directly from the Arduino +5V pin (motor + EL panel power draw is low enough not to cause harm to the Arduino)
+  The light panel is based around the 12W LED light diffuser. Once you get the light fixture, unscrew the 6 screws on the back and remove the round metal cover. Inside, you should find a round piece of white foam, a white plastic reflector, a disk of transparent acrylic and a white plastic translucent diffuser (the outside part). This is all we need from this light fixture.
 
-  To avoid, or, at least minimize the flickering, we will boost the PWM frequency of the PIN 3 on the Arduino to 31kHz. Since we are using pin number 3 to drive our buck convertor, it won't affect any delay times (we are changing the TCCR2B register. TCCR0B affects delay)
-I've tested the panel and the Serial functionality is not affected by this frequency increase and, also, the flickering, or "waving of the panel is greatly reduced, compared to the standard frequency. 
   
-  I've tested this with my phone camera and I can go down to 1/60 exposure time without noticing any flickering. This is with the camera on my S20 FE, so f/1.8. I suspect that the exposure times on a dedicated camera will need to be greater that 1/60 anyways.
+
+The arms and base are printed in 3 parts: the two arms and the cross-brace that holds them in place with screws. Once you print the parts, align the two arms and the crossbrace, then drill 2mm holes in the brace through the already modeled holes in the arms. Then, insert either M3 screws and tighten down. Avoid overtightnening to not strip out the plastic. If you want, you can drill out bigger holes and use heat-set inserts. This base will be held in place on the telescope using metalic hose clamps. Make sure to stick some self-adhesive velvet on the dew shield to avoid scratching the metal. 
 
 
-  The light is quite blue, despite their claims that it is white, so I've used a piece transparent red binder cover to bring the color balance closer to white. It might not matter for mono, but I think it does make a difference for color cameras.
-On top of the red plastic,I've also added a piece of 2mm plexiglass for rigidity and a matte white translucid binder cover.
-Make sure to black out the edges of the plexiglass to avoid internal reflection and light bleeds from the outside. I've also taped the whole outside edge with a black textile tape.
-
-After adding the red and white binder cover, the histogram looks like this, which is good enough.
-
-![image](https://github.com/user-attachments/assets/7bedba7d-d8d7-404f-bc6c-3f016e0d6335)
-
-
-The panel is held together with 6 screws and another 4 that hold it to the arms. 
-
-The arms are specifically designed to go on the 3mm and 6mm shafts of the motor and potentiometer respectively. They also have a slot for installing a nut and a hole for a locking screw (M3 nut and screw, 14mm length). When mounting the motor, it's a good practice to try and get the shafts' flat portion to line up with the locking screw.
-Use a 10k-20k 16mm diameter, 6mm shaft potentiometer and fix it to the endcap using the included nut.
-
-
-To fine tune the 0 position, using the Arduino IDE:
-  - With no arms attached send the close command and manually turn the potentiometer by hand to the 0 position, until the motor stops spinning.
-  - Put the arms on the motor and potentiometer, then mount the panel
-  - Send >CLOSE# again and see where they stop.
-  - If they stop before the desired position, undo the potentiometer locking screw and turn it 1 or 2 degrees clockwise.
-  - Send >OPEN# and then >CLOSE# again. Repeat this until you get the desired 0 position. Make sure to tighten the locking screws well enough so that they won't slip on the shafts.
-
-
-The motor I've used is a GA12 N20 15rpm geared micromotor (https://shorturl.at/ir1aB) 
-Initially, I wanted to use a 28BYJ-48, modified to bipolar mode, to run at 12V, but I found that the gearing was too weak to hold the panel position at "half open" (the panel would easily backdrive the motor). 
-This micromotor, as small as it is, has a 1000:1 gearing ratio (compared to 1:64 on the stepper motor). I did not manage to backdrive it by applying a safe amount of force (more than the panel would apply anyway), so it's safe to say this won't budge during the night.
-
-
-The schematic is quite simple and the board has a pretty small footprint 
-![image](https://github.com/user-attachments/assets/290eb6ae-2977-4938-9050-784aab798a8a)
-![image](https://github.com/user-attachments/assets/71d06e24-8a3e-4633-805c-6a8808d2223a)
-![image](https://github.com/user-attachments/assets/07c1bc4c-0736-4f68-be47-80da9ff294c6)
+![image](https://github.com/user-attachments/assets/8c22c011-faad-4d7d-acfe-cd579086f3c3)
 
 
 
+Print the four parts of the panel (BASE,RING,SPACER and SUPPORT), then assemble as follows:
 
-The case is made out of three parts:
-  - The body + the end cap with the motor mounting point
-  - The end cap with the Potentiometer mounting point and USB hole
-  - The base that will mount on the telescope.
-I did not print the base as part of the main body to avoid large support material usage. The body was designed to hold the PCB in place. The PCB will fit inside the channels and will go in as far as the end cap allows.
-Basically, if you respect the dimensions, the PCB should go in all the way and be flush with the open end. If it's too sunken in, just add some bits of plastic to the end cap. If it's peaking out, remove some PCB.
+- use 6 x 8mm M3 screws and nuts and connect the BASE to the SUPPORT using pre-modeled holes in the BASE. You can add some epoxy on the screw heads to stick them to the base for ease of later adjustment.
+- solder two wires to the LED strip, the stick it around the inside of the BASE. You will need to overlap the last 2-3 mm of the strip after cutting it on the closest cutting point. To do that strip back the 2-3mm off the silicone cover from the LED strip and stick the end with the wires on top of that. Thread the wires thorugh the hole in the center of the BASE (it comes out through the SUPPORT into the electronics chamber)
+- Put the foam piece in the center. You might want to cut a channel for the wires into the foam.
+- Add the thin white reflector
+- add the acrylic disk in the center
+- add the 2.2mm 3d printed spacer ring
+- put the translucent white diffuser on top
+- add the 3d printed ring, align the screw holes with the ones in the base and screw in 6 x 4mm M3 bolts. You can use the bolts that came with the servo motor, since we will be using different bolts to secure the arm to the servo.
 
-![image](https://github.com/user-attachments/assets/b7680632-d96a-433d-b673-de995c7ce923)
+This concludes building the panel itself.
 
 
-I've glued the base to the body using some epoxy glue. Make sure to rough up the surfaces with a 40 grit sandpaper, so that the epoxy can adhere better. I've also added two pieces of tape to better hold the base to the body. 
-Remember: all the force that will be exerted to the device will be conentrated here. If this joint is weak, it will break and fall off the telescope (not fun). 
+Next, cut, etch, drill and assemble the PCB, then put it inside the electronics case (PCB is in the Construction folder.
+![Schematic](https://github.com/user-attachments/assets/b4beb28e-5662-41a8-ae67-3254c906eca2)
 
-You might also add some screws between the base and the body, but make sure that the screws don't touch anthing inside (basically why I've avoided using screws initially).
+I suggest cutting a 40mm x 60mm board so it fits snuggly against the walls of the SUPPORT. Solder the servo motor wires and the LED strip wires to the PCB. 
+Then, drill four M3 holes in the PCB and the plastic risers, then screw the PCB down, avoiding overtightnening the screws. Make sure you print the risers with 100% infil.
+Secure the SERVO in the SUPPORT bracket using the plastic screws that came supplied with the motor. 
+Print the COVER, then secure it using M3 bolts, two on top and two on the sides.
 
-The last thing is to make way for the 5V to 160V converter that comes with the panel. EL panels run on high frequency high voltage AC (160V at around 1kHz) created by a choppper circuit inside the converter. 
-This is the reason why we need to use a buck converter and cannot use PWM to drive and dim the panel. The converter needs DC to correctly function, so we need to vary the voltage that we send to its' power supply instead of the duty cycle. 
-
-The converter will be mounted on the back wall, inside the body, using either epoxy or double sided tape (i recommend double sided foam tape, so that it can be removed easily if ever needed). 
-
-![image](https://github.com/user-attachments/assets/368728ca-31bf-482c-a3e7-16403fa747f3)
-
-TO get the power outside, drill a small hole on the back panel, close to the fixed endcap (the one with the motor), cut the connector, then feed the wire through that hole. I suggest skipping the connector between the panel and the converter and just soldering the wires together.
-Since it runs on AC, polarity doesn't matter. Fix the wire with a ziptie around the motor arm.
+At this point, the flat panel can be used as is. If you intend to build and use the panel as a manual panel, instead of a motorised one, you can follow the same procedure, but skip adding the motor. Skip the next step if you want this.
 
 
 
-The PCB can be printed at home using the laser printer + clothes iron + etching solution, or you can order it online. Whatever works best for you. 
-You can load the code to the Arduino before or after mounting it. 
-Make sure to wire the motor wires correctly so that it spins in the right direction. If you've wired it wrong, you can just reverse the 5 and 6 pins for OPEN and CLOSE in the arduino code: 
+Mounting everything together:
 
-![image](https://github.com/user-attachments/assets/3a62564d-5ec1-468b-8ab2-19a06a03e4de)
-
-
-
-The ASCOM setup window has three properties:
-  - COM port. Select the right port for this device. 
-  - Closed Position - Where should the panel stop when closing
-  - Open Position - Where should the panel stop when opening
-The open and close values are between 0 and 1023, however, I would suggest only using between 0 and 950 due to inacuracies in the potentiometers.
-
-![image](https://github.com/user-attachments/assets/c4e7d72b-7d30-4cd0-ace7-a0611c7df51f)
+Add the two metal wheels to the servo. Secure the one on the driven axle of the servo using the included M3 bolt. Use another M3 bolt for the support axle (the black plastic one that does not rotate). 
+Next, loosely mount the ARMS and CROSS-BRACE to the telescope, then slide the SERVO motor shafts between the two arms. The arms have slotted holes, so the 0 position can be adjusted (the splined shaft holes do not end up perfectly aligned at 90 degrees).
+DO NOT INSERT THE SCREWS MOUNTING THE ARMS TO THE SERVO YET! We need to make sure where the servo is currently positioned (0 to 270 degrees).
+Print the cable clips and glue them to the ARM you want you cables to be attached to (use superglue or epoxy). 
 
 
-To find out the right values, you can use the Serial Monitor inside the Arduino IDE.
-Send >OPEN# to open the panel and >CLOSE# to close it. Send >HALT# to stop the motion where you want it to stop, then send >GETPOSITION# to get the current position. Use that position in either of the two properties to set the panel's limits. 
+Programing the board and driver setup:
+
+Open Arduino IDE on your computer and connect the Arduino. Download the INO file from the release page and open it in the IDE. Select the correct COM port and board type, then upload the code. 
+Download and install the ASCOM driver from the release page. 
+Once installed, open N.I.N.A (or whatever aquisition software you are using), then select PopUp AFP. Warning: due to some reasons unknown to me, the ASCOM driver installer creates two entries in the dropdown selection menu. One of them works, but one of them is not registered with ASCOM, so it won't work. Check to see whcih one works and use that one. Open the properties, select the right COM port and set the Closed and Open positions (0 to 270 degrees), then hit Ok, then Connect to the device. 
+
+Once connected, it's time for testing. Plug in a 12V power source and toggle the light panel on and off, setting different light levels (0 - 255). 
+If you've used a jumper instead of a limiting resistor, the 255 value will be extremely bright. Now it's time to check and chose the right current limiting resistor for your situation (I've used 330 ohms and it works fine).
+Then, click Open and Close and watch for movement of the stepper motor (remember, we do not have any screws mounted, so only the stepper flanges will move, but not the whole panel). 
+
+Setting the Closed and Open Positions (angles) and the physical 0 position.
+
+Earlier, when setting up the driver in NINA, we had to select an Open and Closed position for the panel. The Closed position should always be 0, but you can alter that in the unlikely eventuality you actually need to change it. 
+Now, open the panel manually and check how much can it open. Measure the angle starting from the 0 position, then set that as Open position.
+When there's no obstruction to the panel, it can fully open. Set the Open position to 270. This will open the panel fully, then set it parralel to the telescope
+![image](https://github.com/user-attachments/assets/182fdfe3-1eff-4d75-9b9f-a09fd87e9433)
+
+If theres any obstruction or, for any other reason, you need to open the panel lees than the full 270 degrees (which, with the TD7120MG is never really 270, more like 250-260), set the desired angle as Open position.
+
+![image](https://github.com/user-attachments/assets/fc809829-f3bd-4a35-a91a-78e5acb836a1)
+
+
+
 
 ![image](https://github.com/user-attachments/assets/11eaeb8e-90e3-411f-a937-706cd0912002)
 
-This is how the screen will look in NINA (I am giving this an an example, since I am only using NINA)
+Set the two values, then connect to the device. Once connected, click the Close button.
 
-Toggle will turn the panel on or off. If there has been no value set to the intensity before, the panel will light up at max brightness (255).
-Open and CLose buttons do what they say: they open and close the cover. 
-Since it is ASCOM connected, the panel can be included in the sequencer to automate flat taking.
+Point your telescope at zenith, then close the panel manually. You might also need to adjust the position of the telescope-side mounting so that the panel can be flush with the dew shield's opening. 
+At this point, you can insert the 8  M3 x 10mm bolts throught he slots in the arms and tighten them down. You can use some lock washers between the screw head and the arms, so it will bite into the plastic and not move. 
 
-Also, I've added a watchdog to check for panel stalling. If the panel is set to open or close and the position does not change by at least 10 in about 2 seconds, the power to the motor will be cut off and "Error" state will be sent to driver.
-This is in place to avoid damage to the device.
+Once you have tightened the screws, click the Open button. The panel should now move to its' set max position. 
 
+And..... that's it! You're ready to use the flat panel. 
 
+Note on LED strips: 
+I have used a warm white LED strip. While it looks very yellow-ish, the emissions in Ha and S2 are more intense than with cool/natural white. You can test and go with whichever colour temperature you might find fitting for your situation.
 
-
-You can find the PCB copper file, EasyEDA project and the Fusion 360 project inside the "Construction" folder
+You can find the PCB copper file, EasyEDA project, Fusion 360 project and STL files inside the "Construction" folder
 
 
 
