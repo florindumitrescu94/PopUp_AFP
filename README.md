@@ -4,6 +4,8 @@
 
 ASCOM connected DIY Automatic Flat Panel with Arduino and LED Strip.
 
+Linux / INDI users: see [`PopUp_AFP_INDI/`](PopUp_AFP_INDI/) for a native INDI driver talking to the same Arduino firmware — no ASCOM/Windows required.
+
 While a number of DIY flat panel projects exist online already, I wanted to make my own.
 This is a flat panel with a spin: The motor and circuit board are on the panel itself, not on the telescope mounted base.
 This allows the whole thing to be more low profile than existing designs. One advantage is the fact that no fragile wires will flex during operation. While there still are some wires present (the USB and Power cables), these wires can be swapped out at any time easily and without the need to open up the device.
