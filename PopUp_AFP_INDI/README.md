@@ -27,8 +27,8 @@ sudo make install
 
 `make install` drops the driver at `/usr/local/bin/indi_popup_afp` and its
 driver descriptor at `/usr/share/indi/indi_popup_afp.xml` — the two locations
-INDI servers and clients (indiserver, KStars/Ekos, the INDI Web Manager) scan
-automatically, so nothing else needs registering.
+a **native** `indiserver`/INDI Web Manager install scans automatically, so
+nothing else needs registering there.
 
 If `/dev/ttyUSB*` or `/dev/ttyACM*` isn't writable by your user, add yourself
 to the serial port's owning group (usually `dialout`) and re-login:
@@ -36,6 +36,32 @@ to the serial port's owning group (usually `dialout`) and re-login:
 ```bash
 sudo usermod -aG dialout $USER
 ```
+
+### KStars installed as a Flatpak
+
+If KStars/Ekos is a Flatpak (`org.kde.kstars` — increasingly the default way
+it's distributed on Linux), the above is not enough, for two reasons:
+
+1. **It doesn't read `/usr/share/indi/*.xml` at all.** Its Auxiliary driver
+   list for a custom driver comes from a `customdrivers` table in its own
+   SQLite db (`~/.var/app/org.kde.kstars/data/kstars/userdb.sqlite`), normally
+   populated via the "add a custom driver" control in the Ekos Profile
+   Editor's Auxiliary dropdown (enter Name/Label/Family `Auxiliary`/Exec
+   `indi_popup_afp`/Version `1.0`).
+2. **The sandbox can't see `/usr/local/bin`**, even with the Flatpak's broad
+   `host` filesystem permission — its `/usr` belongs to the KDE runtime, not
+   the host, so `indiserver` fails to exec the driver by name and the device
+   just hangs (Ekos shows the device icon stuck, never reaching "connected").
+   `$HOME` *is* visible to the sandbox, so install the binary there instead
+   and give the custom driver's Exec field that **absolute path**, e.g.:
+
+   ```bash
+   mkdir -p ~/.local/bin
+   cp build/indi_popup_afp ~/.local/bin/indi_popup_afp
+   ```
+
+   then set Exec to `/home/<you>/.local/bin/indi_popup_afp` rather than the
+   bare `indi_popup_afp`, in the Ekos custom-driver dialog.
 
 ## Using it
 
